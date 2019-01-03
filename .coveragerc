@@ -1,0 +1,7 @@
+[report]
+omit =
+    setup.py
+    cpr/__main__.py
+    cpr/_version.py
+    versioneer.py
+    tests/*
