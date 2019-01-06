@@ -58,7 +58,7 @@ def update_prefix(path, new_prefix, placeholder, mode='text'):
         original_data = fh.read()
         fh.seek(0)
 
-        data = replace_prefix(original_data, mode, placeholder, new_prefix)
+        data = _replace_prefix(original_data, mode, placeholder, new_prefix)
 
         # If the before and after content is the same, skip writing
         if data != original_data:
@@ -66,11 +66,11 @@ def update_prefix(path, new_prefix, placeholder, mode='text'):
             fh.truncate()
 
 
-def replace_prefix(data, mode, placeholder, new_prefix):
+def _replace_prefix(data, mode, placeholder, new_prefix):
     if mode == 'text':
-        data2 = text_replace(data, placeholder, new_prefix)
+        data2 = _text_replace(data, placeholder, new_prefix)
     elif mode == 'binary':
-        data2 = binary_replace(data,
+        data2 = _binary_replace(data,
                                placeholder.encode('utf-8'),
                                new_prefix.encode('utf-8'))
         if len(data2) != len(data):
@@ -85,18 +85,18 @@ def replace_prefix(data, mode, placeholder, new_prefix):
     return data2
 
 
-def text_replace(data, placeholder, new_prefix):
+def _text_replace(data, placeholder, new_prefix):
     return data.replace(placeholder.encode('utf-8'), new_prefix.encode('utf-8'))
 
 
 if on_win:
-    def binary_replace(data, placeholder, new_prefix):
+    def _binary_replace(data, placeholder, new_prefix):
         if placeholder not in data:
             return data
-        return replace_pyzzer_entry_point_shebang(data, placeholder, new_prefix)
+        return _replace_pyzzer_entry_point_shebang(data, placeholder, new_prefix)
 
 else:
-    def binary_replace(data, placeholder, new_prefix):
+    def _binary_replace(data, placeholder, new_prefix):
         """Perform a binary replacement of `data`, where ``placeholder`` is
         replaced with ``new_prefix`` and the remaining string is padded with null
         characters.  All input arguments are expected to be bytes objects."""
@@ -112,7 +112,7 @@ else:
         return pat.sub(replace, data)
 
 
-def replace_pyzzer_entry_point_shebang(all_data, placeholder, new_prefix):
+def _replace_pyzzer_entry_point_shebang(all_data, placeholder, new_prefix):
     """Code adapted from pyzzer. This is meant to deal with entry point exe's
     created by distlib, which consist of a launcher, then a shebang, then a zip
     archive of the entry point code to run.  We need to change the shebang.

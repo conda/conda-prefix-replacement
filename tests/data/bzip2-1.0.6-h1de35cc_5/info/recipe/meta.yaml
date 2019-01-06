@@ -1,0 +1,75 @@
+# This file created by conda-build 3.10.4
+# meta.yaml template originally from:
+# /opt/concourse/worker/volumes/live/4bda0ccf-aed3-4411-5285-700af2a5b24e/volume/rsync-recipes/bzip2-1.0.6-on-osx, last modified Tue May 22 13:22:27 2018
+# ------------------------------------------------
+
+package:
+    name: bzip2
+    version: 1.0.6
+source:
+    fn: bzip2-1.0.6.tar.gz
+    md5: 00b516f4704d4a7cb50a1d97e6e8e15b
+    patches:
+        - 0001-cross.patch
+        - bzip2recover-CVE-2016-3189.patch
+    url: http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz
+build:
+    number: 5
+    run_exports:
+        - bzip2 >=1.0.6,<2.0a0
+    string: h1de35cc_5
+requirements:
+    build:
+        - cctools 895 h7512d6f_0
+        - clang 4.0.1 h662ec87_0
+        - clang_osx-64 4.0.1 h1ce6c1d_11
+        - compiler-rt 4.0.1 h5487866_0
+        - ld64 274.2 h7c2db76_0
+        - libcxx 4.0.1 h579ed51_0
+        - libcxxabi 4.0.1 hebd6815_0
+        - llvm 4.0.1 hc748206_0
+        - llvm-lto-tapi 4.0.1 h6701bc3_0
+        - make 4.2.1 h3efe00b_1
+test:
+    commands:
+        - bzip2 --help
+        - test -f ${PREFIX}/bin/bunzip2
+        - test -f ${PREFIX}/bin/bzcat
+        - test -f ${PREFIX}/bin/bzcmp
+        - test -f ${PREFIX}/bin/bzdiff
+        - test -f ${PREFIX}/bin/bzegrep
+        - test -f ${PREFIX}/bin/bzfgrep
+        - test -f ${PREFIX}/bin/bzgrep
+        - test -f ${PREFIX}/bin/bzip2recover
+        - test -f ${PREFIX}/bin/bzip2
+        - test -f ${PREFIX}/bin/bzless
+        - test -f ${PREFIX}/bin/bzmore
+        - test -f ${PREFIX}/include/bzlib.h
+        - test -f ${PREFIX}/lib/libbz2.a
+        - test -f ${PREFIX}/lib/libbz2.dylib
+about:
+    description: 'Bzip2 is a freely available high-quality data compressor. It typically
+
+        compresses files to within 10% to 15% of the best available techniques,
+
+        whilst being around twice as fast at compression and six times faster
+
+        at decompression.
+
+        '
+    doc_url: http://www.bzip.org/docs.html
+    home: http://www.bzip.org/
+    license: bzip2
+    license_family: BSD
+    license_file: LICENSE
+    summary: high-quality data compressor
+extra:
+    copy_test_source_files: true
+    final: true
+    recipe-maintainers:
+        - jakirkham
+        - jjhelmus
+        - jlanga
+        - mingwandroid
+        - msarahan
+        - pelson
