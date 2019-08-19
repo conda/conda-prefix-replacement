@@ -1,2 +1,3 @@
 # conda-prefix-replacement
-CPR resuscitates packages in new locations
+This python tool is used to process freshly built and installed software. It replaces any paths baked into the software that refer to the absolute path of the installation directory that was used with a relative path. This makes the software portable, so it can run on other machines. Both text and binary files are processed. For the latter the total length of the binary most not change, hence the new prefix is overwritten in place and must be no longer than the old one. Any freed up space is filled with the "end of string" character. To ensure that the initially used installation path is long enough it is chosen to be 255 characters long.  
+ 
