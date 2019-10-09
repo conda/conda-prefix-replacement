@@ -51,7 +51,7 @@ Tool for replacing hard-coded prefixes in text and binary files""",
         api.replace_paths(args.prefix, args.recorded_paths)
 
     elif args.subparser_name == 'rehome':
-        api.rehome(args.prefix, args.old_path)
+        api.rehome(args.prefix, args.old_prefix)
 
 
 if __name__ == '__main__':
