@@ -1,13 +1,19 @@
 from argparse import ArgumentParser
 
-from cpr import api
+from cpr import api, __version__
 
 
-def cli(args):
+def cli(args=None):
     p = ArgumentParser(
         description="""
 Tool for replacing hard-coded prefixes in text and binary files""",
         conflict_handler='resolve'
+    )
+    p.add_argument(
+        '-V', '--version',
+        action='version',
+        help='Show the conda-prefix-replacement version number and exit.',
+        version='conda-prefix-replacement %s' % __version__,
     )
     sp = p.add_subparsers(title='subcommands', dest='subparser_name')
     detect_parser = sp.add_parser('detect', help='detect hard-coded prefixes in files', aliases=['d'])
@@ -28,13 +34,24 @@ Tool for replacing hard-coded prefixes in text and binary files""",
     replace_parser.add_argument("--paths_file", default='has_prefix', help="text file listing files that need "
                                 "replacement attention.  Format is: FILE_PATH PATH_EMBEDDING_TYPE PATH_TO_BE_REPLACED.  "
                                 "See any package's info/has_prefix file for examples.")
-    args, = p.parse_args(args)
+
+    rehome_parser = sp.add_parser('rehome', help=("fix a moved installation by changing embedded paths to "
+                                                  "match the new location"))
+    rehome_parser.add_argument("prefix", help="the current location of the env you want to fix")
+    rehome_parser.add_argument("--old-prefix", help=("the old location of the environment.  If you do not "
+                                                     "provide this, CPR tries to find it based on files in "
+                                                     "the environment (.pc files from common packages)"))
+
+    args = p.parse_args(args)
 
     if args.subparser_name in ('detect', 'd'):
         api.detect_paths(args.prefix, args.files, args.extra_paths, args.out_path)
 
     elif args.subparser_name in ('replace', 'r'):
         api.replace_paths(args.prefix, args.recorded_paths)
+
+    elif args.subparser_name == 'rehome':
+        api.rehome(args.prefix, args.old_path)
 
 
 if __name__ == '__main__':
