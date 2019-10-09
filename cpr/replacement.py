@@ -71,8 +71,8 @@ def _replace_prefix(data, mode, placeholder, new_prefix):
         data2 = _text_replace(data, placeholder, new_prefix)
     elif mode == 'binary':
         data2 = _binary_replace(data,
-                               placeholder.encode('utf-8'),
-                               new_prefix.encode('utf-8'))
+                                placeholder.encode() if hasattr(placeholder, 'encode') else placeholder,
+                                new_prefix.encode() if hasattr(new_prefix, 'encode') else new_prefix)
         if len(data2) != len(data):
             message = ("Found mismatched data length in binary file:\n"
                        "original data length: {len_orig!d})\n"
@@ -101,15 +101,16 @@ else:
         replaced with ``new_prefix`` and the remaining string is padded with null
         characters.  All input arguments are expected to be bytes objects."""
 
-        def replace(match):
-            occurances = match.group().count(placeholder)
-            padding = (len(placeholder) - len(new_prefix)) * occurances
-            if padding < 0:
-                raise ValueError("negative padding")
-            return match.group().replace(placeholder, new_prefix) + b'\0' * padding
+        if len(new_prefix) > 255 and len(new_prefix) > len(placeholder):
+            raise ValueError("Length of prefix exceeds space available in binary.  Aborting.")
 
         pat = re.compile(re.escape(placeholder) + b'([^\0]*?)\0')
-        return pat.sub(replace, data)
+        for match in pat.finditer(data):
+            start = match.span()[0]
+            if len(new_prefix) < len(placeholder):
+                new_prefix = new_prefix + b"\0" * (len(placeholder) - len(new_prefix))
+            data = data[:start] + new_prefix + data[start+len(new_prefix):]
+        return data
 
 
 def _replace_pyzzer_entry_point_shebang(all_data, placeholder, new_prefix):
