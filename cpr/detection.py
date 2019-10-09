@@ -5,6 +5,7 @@ from locale import getpreferredencoding
 import mmap
 
 from six import string_types
+from tqdm import tqdm
 
 on_win = sys.platform == "win32"
 
@@ -52,7 +53,7 @@ def _ensure_list(arg):
     return arg
 
 
-def detect_prefix_files(prefix, files=None, extra_paths=None):
+def detect_prefix_files(prefix, path_to_detect, files=None, extra_paths=None):
     '''
     Yields files that contain the current prefix in them
 
@@ -65,14 +66,19 @@ def detect_prefix_files(prefix, files=None, extra_paths=None):
                  for dp, dn, filenames in os.walk(prefix)
                  for f in filenames]
 
-    paths_to_find = [prefix]
+    paths_to_find = [path_to_detect]
+    # already correct - this is necessary if the new path is a subfolder of the old prefix
+    paths_to_ignore = [prefix] if prefix != path_to_detect else []
     for p in _ensure_list(extra_paths):
-        paths_to_find.append(os.path.normpath(os.path.join(prefix, p)))
+        paths_to_find.append(os.path.normpath(os.path.join(path_to_detect, p)))
     if on_win:
-        paths_to_find.extend([prefix.replace('\\', '/'), prefix.replace('\\', '\\\\')])
+        paths_to_find.extend([path_to_detect.replace('\\', '/'), path_to_detect.replace('\\', '\\\\')])
+        paths_to_ignore.extend([prefix.replace('\\', '/'), prefix.replace('\\', '\\\\')])
     binary_paths_to_find = [p.encode(codec) for p in paths_to_find]
+    binary_paths_to_ignore = [p.encode(codec) for p in paths_to_ignore]
 
-    for f in files:
+
+    for f in tqdm(files, desc="Detecting embedded prefix", leave=False):
         if f.endswith(('.pyc', '.pyo')):
             continue
         path = os.path.join(prefix, f)
@@ -97,8 +103,8 @@ def detect_prefix_files(prefix, files=None, extra_paths=None):
             mm = fi.read()
 
         mode = 'binary' if mm.find(b'\x00') != -1 else 'text'
-        for path in binary_paths_to_find:
-            if mm.find(path) != -1:
-                yield (prefix, mode, f)
+        for idx, path in enumerate(binary_paths_to_find):
+            if mm.find(path) != -1 and all(mm.find(_) == -1 for _ in binary_paths_to_ignore):
+                yield (paths_to_find[idx], mode, f)
         mm.close()
         fi.close()

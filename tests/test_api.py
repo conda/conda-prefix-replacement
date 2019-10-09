@@ -1,5 +1,8 @@
 import os
 import shutil
+
+import pytest
+
 from cpr import api
 from cpr.detection import codec
 
@@ -40,3 +43,37 @@ def test_update_prefixes(testing_workdir):
 
     detected_paths = list(api.detect_paths(testing_workdir))
     assert len(detected_paths) == 4
+
+
+def test_rehome_with_detected_old_prefix(prefix_with_files_recorded):
+    shutil.copytree(prefix_with_files_recorded, 'newpath')
+
+    original_detection = api.detect_paths('newpath', prefix_with_files_recorded)
+
+    assert original_detection
+
+    # verify that the file in newpath has the old prefixes
+    with pytest.raises(ValueError):
+        api.rehome('newpath')
+
+    # nothing should have changed
+    new_detection = api.detect_paths('newpath', prefix_with_files_recorded)
+    assert new_detection
+    assert list(new_detection) == list(original_detection)
+
+
+def test_rehome_with_specified_old_prefix(prefix_with_files_recorded):
+    shutil.copytree(prefix_with_files_recorded, 'newpath')
+
+    # verify that the file in newpath has the old prefixes
+    assert api.detect_paths('newpath', prefix_with_files_recorded)
+
+    # replace
+    api.rehome('newpath', prefix_with_files_recorded)
+
+    # verify that replacement changed things appropriately
+    files_with_old_prefix = list(api.detect_paths('newpath', prefix_with_files_recorded))
+    assert api.detect_paths('newpath', 'newpath')
+
+    # this is not a helpful test, because the new prefix is a subdir of the old one...
+    # assert not files_with_old_prefix, "old prefixes remain: {}".format(files_with_old_prefix)
