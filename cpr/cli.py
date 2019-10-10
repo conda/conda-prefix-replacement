@@ -19,10 +19,12 @@ Tool for replacing hard-coded prefixes in text and binary files""",
     detect_parser = sp.add_parser('detect', help='detect hard-coded prefixes in files', aliases=['d'])
     detect_parser.add_argument("prefix", help="base prefix of files to replace prefixes in.  This is "
                                "the local location on disk.")
+    detect_parser.add_argument("--path-to-detect", help="Path you expect to be embedded in files.  "
+                               "If not provided, defaults to the value of `prefix`")
     detect_parser.add_argument("--files", help="Path to file specifying subset of files within prefix to examine.  "
                                "File should contain one relative path per line.")
     detect_parser.add_argument("--extra_paths", nargs="+", help="Additional paths relative to the "
-                               "prefix that should also be detected and recorded.  For example, "
+                               "`--path-to-detect` that should also be detected and recorded.  For example, "
                                "../_build_env may be useful if the build env has been recorded in files.")
     detect_parser.add_argument("--out-path", default="has_prefix", help="path to file to save detected paths to.  "
                                "Path must be provided for CLI usage (default is has_prefix).  For API usage, "
@@ -45,7 +47,7 @@ Tool for replacing hard-coded prefixes in text and binary files""",
     args = p.parse_args(args)
 
     if args.subparser_name in ('detect', 'd'):
-        api.detect_paths(args.prefix, args.files, args.extra_paths, args.out_path)
+        api.detect_paths(args.prefix, args.path_to_detect, args.files, args.extra_paths, args.out_path)
 
     elif args.subparser_name in ('replace', 'r'):
         api.replace_paths(args.prefix, args.recorded_paths)

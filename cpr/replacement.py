@@ -27,6 +27,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import os
 import re
 import struct
 import sys
@@ -53,6 +54,13 @@ def update_prefix(path, new_prefix, placeholder, mode='text'):
         # force all prefix replacements to forward slashes to simplify need to
         # escape backslashes replace with unix-style path separators
         new_prefix = new_prefix.replace('\\', '/')
+
+    if not os.path.isabs(path):
+        path = os.path.join(new_prefix, path)
+
+    if new_prefix[-1] != placeholder[-1]:
+        new_prefix = new_prefix.rstrip('/').rstrip('\\').rstrip('\\')
+        placeholder = placeholder.rstrip('/').rstrip('\\').rstrip('\\')
 
     with open(path, 'rb+') as fh:
         original_data = fh.read()

@@ -47,7 +47,6 @@ def replace_paths(prefix, recorded_paths):
     """Given a list of paths in a prefix, go in and do the text or binary replacement
     of hard-coded prefixes"""
     from cpr.replacement import update_prefix
-    from tqdm import tqdm
 
     if not _os.path.isabs(prefix):
         old_prefix = _os.path.join(_os.getcwd(), prefix)
@@ -57,9 +56,12 @@ def replace_paths(prefix, recorded_paths):
             raise ValueError("File given for list of recorded paths, '{}', does not appear to exist".format(recorded_paths))
         with open(recorded_paths) as f:
             recorded_paths = (_.split() for _ in f.readlines())
-    for (placeholder, mode, path) in tqdm(recorded_paths, desc="Updating embedded prefix", leave=False):
+    for (placeholder, mode, path) in recorded_paths:
         if placeholder != prefix:
-            update_prefix(path, prefix, placeholder, mode)
+            try:
+                update_prefix(path, prefix, placeholder, mode)
+            except OSError:
+                print("error with path {}".format(path))
 
 
 def rehome(prefix, old_prefix=None):
@@ -67,6 +69,7 @@ def rehome(prefix, old_prefix=None):
     attempt to "rehome" it - find instances of the old prefix baked into files, and adjust
     those baked-in locations to match the new location."""
     import sys
+    import re
     if not _os.path.isabs(prefix):
         prefix = _os.path.join(_os.getcwd(), prefix)
     if not old_prefix:
@@ -84,15 +87,18 @@ def rehome(prefix, old_prefix=None):
                 abspath = _os.path.join(prefix, path)
                 if _os.path.isfile(abspath):
                     with open(abspath) as f:
-                        line = [_ for _ in f.readlines() if f.startswith("prefix=")]
-                        if line:
-                            old_prefix = line[0].replace("prefix=", "")
+                        match = re.search("^prefix=(.*)$", f.read(), re.M)
+                        if match:
+                            old_prefix = match.group(1)
                             break
+
     if not old_prefix:
         raise ValueError("No known prefix files were found in your environment.  Can't auto-detect "
                          "old prefix.  Please specify it manually with the --old-prefix argument.")
+
     if not _os.path.isabs(old_prefix):
         old_prefix = _os.path.join(_os.getcwd(), old_prefix)
 
     detected_paths = detect_paths(prefix, old_prefix)
     replace_paths(prefix, detected_paths)
+
