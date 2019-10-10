@@ -5,3 +5,9 @@
   - msarahan@continuum.io
   aliases:
   - Mike Sarahan
+  num_commits: 10
+  first_commit: 2019-01-03 17:28:03
+- name: Oleg Alexandrov
+  email: oleg.alexandrov@gmail.com
+  num_commits: 1
+  first_commit: 2019-08-19 18:31:02
