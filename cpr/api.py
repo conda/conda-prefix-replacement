@@ -38,7 +38,7 @@ def detect_paths(prefix, path_to_detect=None, files=None, extra_paths=None, out_
             _os.makedirs(_os.path.dirname(out_path))
         with open(out_path, 'w') as f:
             for entry in detected_content:
-                print('    '.join(entry), file=f)
+                f.write('    '.join(entry) + "\n")
     else:
         return detected_content
 
