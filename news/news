@@ -1,0 +1,28 @@
+Enhancements:
+-------------
+
+* add rever
+* modernize/cleanup travis
+
+Bug fixes:
+----------
+
+* fix missing --path-to-detect for detect cli
+* fix py27 support
+* fix prefix detection in reference files (was not using abspath and going sideways)
+
+Deprecations:
+-------------
+
+* <news item>
+
+Docs:
+-----
+
+* improve readme description of what the tool does
+
+Other:
+------
+
+* <news item>
+
