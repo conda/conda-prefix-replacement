@@ -5,7 +5,7 @@ that have the absolute path of the build-time install prefix baked into them,
 and also for replacing those baked-in prefixes with new values when files are moved.
 
 Both text and binary files are processed. For the latter the total length of the 
-binary most not change, hence the new prefix is overwritten in place and must be 
+binary must not change, hence the new prefix is overwritten in place and must be 
 no longer than the old one. Any freed up space is filled with the "end of string" 
 character. To ensure that the initially used installation path is long enough it 
 is chosen to be 255 characters long.  
