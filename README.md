@@ -2,8 +2,6 @@
 
 > [!WARNING]
 > This project is retired and no longer maintained.
-> To package a conda environment for relocation, see
-> [conda-pack](https://conda.github.io/conda-pack/).
 > For general help with conda environments, see
 > [conda's community support options](https://docs.conda.io/en/latest/help-support.html#community-support).
 
