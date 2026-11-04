@@ -1,5 +1,12 @@
 # conda-prefix-replacement
 
+> [!WARNING]
+> This project is retired and no longer maintained.
+> To package a conda environment for relocation, see
+> [conda-pack](https://conda.github.io/conda-pack/).
+> For general help with conda environments, see
+> [conda's community support options](https://docs.conda.io/en/latest/help-support.html#community-support).
+
 CPR resuscitates packages in new locations. It's a library for detecting files
 that have the absolute path of the build-time install prefix baked into them, 
 and also for replacing those baked-in prefixes with new values when files are moved.
