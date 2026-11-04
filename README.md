@@ -2,8 +2,7 @@
 
 > [!WARNING]
 > This project is retired and no longer maintained.
-> For general help with conda environments, see
-> [conda's community support options](https://docs.conda.io/en/latest/help-support.html#community-support).
+> The prefix-replacement implementation lives in `conda` as [`conda.core.portability`](https://docs.conda.io/projects/conda/en/latest/dev-guide/api/conda/core/portability/index.html), and build-time prefix detection is handled by [conda-build](https://docs.conda.io/projects/conda-build/en/latest/resources/make-relocatable.html). There is no replacement for the `cpr rehome` command; for general help with conda environments, including moved environments, see [conda's community support options](https://docs.conda.io/en/latest/help-support.html#community-support).
 
 CPR resuscitates packages in new locations. It's a library for detecting files
 that have the absolute path of the build-time install prefix baked into them, 
